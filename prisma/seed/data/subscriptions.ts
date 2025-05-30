@@ -1,0 +1,58 @@
+module.exports = [
+    // Subscription 1
+    {
+        id: 1,
+        name: 'ACM',
+        provider: 'https://acm.org',
+        start_date: '1982-10-25T00:00:00Z',
+        expiry_date: '2025-10-25T00:00:00Z',
+        payment_period: 1,
+        payment_amount: 187.00,
+        is_recurring: true,
+        is_trial: false,
+        is_active: true,
+        subscription_type: 'Professional',
+    },
+    // Subscription 2
+    {
+        id: 2,
+        name: 'Zoom',
+        provider: 'https://zoom.com',
+        start_date: '2019-02-02T00:00:00Z',
+        expiry_date: '2026-02-02T00:00:00Z',
+        payment_period: 1,
+        payment_amount: 214.70,
+        is_recurring: true,
+        is_trial: false,
+        is_active: true,
+        subscription_type: 'Software',
+    },
+    // Subscription 3
+    {
+        id: 3,
+        name: 'GitHub',
+        provider: 'https://github.com',
+        start_date: '2017-10-15T00:00:00Z',
+        expiry_date: '2025-10-15T00:00:00Z',
+        payment_period: 12,
+        payment_amount: 20.00,
+        is_recurring: true,
+        is_trial: false,
+        is_active: true,
+        subscription_type: 'Software',
+    },
+    // Subscription 4
+    {
+        id: 4,
+        name: 'Slack',
+        provider: 'https://slack.com',
+        start_date: '2020-04-01T00:00:00Z',
+        expiry_date: '2026-04-01T00:00:00Z',
+        payment_period: 1,
+        payment_amount: 105.00,
+        is_recurring: true,
+        is_trial: false,
+        is_active: true,
+        subscription_type: 'Software',
+    },
+]

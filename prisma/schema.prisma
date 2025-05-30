@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Subscription {
+  id                     Int              @id @default(autoincrement())
+  name                   String
+  provider               String?
+  start_date             DateTime
+  expiry_date            DateTime
+  payment_period         Int
+  payment_amount         Decimal
+  is_recurring           Boolean
+  is_trial               Boolean          @default(false)
+  is_active              Boolean          @default(false)
+  subscription_type      SubscriptionType
+  modification_timestamp DateTime         @default(now())
+  event                  Event[]
+}
+
+model Payment {
+  id           Int         @id @default(autoincrement())
+  payment_type PaymentType
+  name         String
+  expiry_date  String
+  event        Event[]
+}
+
+model Event {
+  event_id        Int          @id @default(autoincrement())
+  subscription    Subscription @relation(fields: [subscription_id], references: [id])
+  subscription_id Int
+  payment         Payment      @relation(fields: [payment_id], references: [id])
+  payment_id      Int
+  amount          Decimal
+  event_date      DateTime     @default(now())
+}
+
+enum PaymentType {
+  DEBIT
+  CREDIT
+  PAYPAL
+  OTHER
+}
+
+enum SubscriptionType {
+  Magazine
+  Software
+  Service
+  Professional
+  Other
+}

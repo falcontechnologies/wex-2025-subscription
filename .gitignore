@@ -51,3 +51,5 @@ next-env.d.ts
 /.idea/sbt.xml
 /.idea/vcs.xml
 /wex-2025-subscription.iml
+
+/src/generated/prisma
