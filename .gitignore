@@ -53,3 +53,4 @@ next-env.d.ts
 /wex-2025-subscription.iml
 
 /src/generated/prisma
+package-lock.json
