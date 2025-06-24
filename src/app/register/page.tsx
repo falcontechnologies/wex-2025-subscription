@@ -1,6 +1,12 @@
 'use client';
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -22,10 +28,10 @@ export default function Register() {
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          email: email.trim().toLowerCase(), 
-          password 
-        })
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
       });
 
       const data = await res.json();
@@ -43,32 +49,57 @@ export default function Register() {
   };
 
   return (
-    <div className="p-6">
-      <h1>Register</h1>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-      <input 
-        value={email} 
-        onChange={e => setEmail(e.target.value)} 
-        placeholder="Email"
-        type="email"
-        disabled={isLoading}
-        className="block mb-2 p-2 border"
-      />
-      <input 
-        type="password" 
-        value={password} 
-        onChange={e => setPassword(e.target.value)} 
-        placeholder="Password"
-        disabled={isLoading}
-        className="block mb-2 p-2 border"
-      />
-      <button 
+    <div className="w-full sm:w-[400px] mx-auto mt-16 bg-white p-8 rounded-2xl shadow-md space-y-6">
+      <h1 className="text-2xl font-semibold text-center">Create your account</h1>
+
+      <div className="grid w-full items-center gap-1.5">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading}
+          required
+        />
+      </div>
+
+      <div className="grid w-full items-center gap-1.5">
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
+          required
+        />
+      </div>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      <Button
+        className="w-full"
         onClick={handleRegister}
         disabled={isLoading}
-        className="p-2 bg-blue-500 text-white disabled:opacity-50"
+        size="lg"
+        type="button"
       >
         {isLoading ? 'Registering...' : 'Register'}
-      </button>
+      </Button>
+      <p className="text-center text-sm text-muted-foreground">
+        Have an account?{' '}
+        <Link
+          href="/login"
+          className="font-medium text-blue-600 hover:underline"
+        >
+          Sign in
+        </Link>
+      </p>
     </div>
   );
 }
