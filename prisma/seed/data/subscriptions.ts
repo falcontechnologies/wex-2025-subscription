@@ -2,6 +2,7 @@ module.exports = [
     // Subscription 1
     {
         id: 1,
+        userId: 1,
         name: 'ACM',
         provider: 'https://acm.org',
         start_date: '1982-10-25T00:00:00Z',
@@ -16,6 +17,7 @@ module.exports = [
     // Subscription 2
     {
         id: 2,
+        userId: 1,
         name: 'Zoom',
         provider: 'https://zoom.com',
         start_date: '2019-02-02T00:00:00Z',
@@ -30,6 +32,7 @@ module.exports = [
     // Subscription 3
     {
         id: 3,
+        userId: 1,
         name: 'GitHub',
         provider: 'https://github.com',
         start_date: '2017-10-15T00:00:00Z',
@@ -44,6 +47,7 @@ module.exports = [
     // Subscription 4
     {
         id: 4,
+        userId: 1,
         name: 'Slack',
         provider: 'https://slack.com',
         start_date: '2020-04-01T00:00:00Z',

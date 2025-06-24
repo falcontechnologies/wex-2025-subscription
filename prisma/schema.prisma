@@ -7,12 +7,26 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int          @id @default(autoincrement())
+  email     String       @unique
+  password  String       
+  name      String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  subscriptions Subscription[]  
+  payments      Payment[]       
+  events        Event[]        
 }
 
 model Subscription {
   id                     Int              @id @default(autoincrement())
+  user                   User             @relation(fields: [userId], references: [id])
+  userId                 Int
   name                   String
   provider               String?
   start_date             DateTime
@@ -29,6 +43,8 @@ model Subscription {
 
 model Payment {
   id           Int         @id @default(autoincrement())
+  user         User        @relation(fields: [userId], references: [id])
+  userId       Int
   payment_type PaymentType
   name         String
   expiry_date  String
@@ -37,6 +53,8 @@ model Payment {
 
 model Event {
   event_id        Int          @id @default(autoincrement())
+  user            User?        @relation(fields: [userId], references: [id])
+  userId          Int?
   subscription    Subscription @relation(fields: [subscription_id], references: [id])
   subscription_id Int
   payment         Payment      @relation(fields: [payment_id], references: [id])
@@ -58,4 +76,5 @@ enum SubscriptionType {
   Service
   Professional
   Other
+
 }
