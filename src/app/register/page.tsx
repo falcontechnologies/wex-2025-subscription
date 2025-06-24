@@ -49,57 +49,63 @@ export default function Register() {
   };
 
   return (
-    <div className="w-full sm:w-[400px] mx-auto mt-16 bg-white p-8 rounded-2xl shadow-md space-y-6">
-      <h1 className="text-2xl font-semibold text-center">Create your account</h1>
-
-      <div className="grid w-full items-center gap-1.5">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isLoading}
-          required
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="w-full sm:w-[400px] mx-auto mt-16 bg-white p-8 rounded-2xl shadow-md space-y-6">
+        <img 
+          src="/subtalonlogo.png" 
+          alt="Subtalon Logo" 
+          className="mx-auto mb-4 w-500 h-30 object-contain" 
         />
-      </div>
+        <h1 className="text-2xl font-semibold text-center">Create your account</h1>
+        <div className="grid w-full items-center gap-1.5">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
+            required
+          />
+        </div>
 
-      <div className="grid w-full items-center gap-1.5">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+        <div className="grid w-full items-center gap-1.5">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isLoading}
+            required
+          />
+        </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <Button
+          className="w-full"
+          onClick={handleRegister}
           disabled={isLoading}
-          required
-        />
-      </div>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      <Button
-        className="w-full"
-        onClick={handleRegister}
-        disabled={isLoading}
-        size="lg"
-        type="button"
-      >
-        {isLoading ? 'Registering...' : 'Register'}
-      </Button>
-      <p className="text-center text-sm text-muted-foreground">
-        Have an account?{' '}
-        <Link
-          href="/login"
-          className="font-medium text-blue-600 hover:underline"
+          size="lg"
+          type="button"
         >
-          Sign in
-        </Link>
-      </p>
+          {isLoading ? 'Registering...' : 'Register'}
+        </Button>
+        <p className="text-center text-sm text-muted-foreground">
+          Have an account?{' '}
+          <Link
+            href="/login"
+            className="font-medium text-blue-600 hover:underline"
+          >
+            Sign in
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
