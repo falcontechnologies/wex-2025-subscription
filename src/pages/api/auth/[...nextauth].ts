@@ -1,61 +1,80 @@
-import NextAuth, { AuthOptions, Session } from "next-auth";
-import type { JWT } from "next-auth/jwt";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@/generated/prisma/client";
-import bcrypt from "bcryptjs";
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { PrismaClient } from '@/generated/prisma';
+import bcrypt from 'bcryptjs';
+import type { NextAuthOptions } from 'next-auth';
 
 const prisma = new PrismaClient();
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
-      name: "Credentials",
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: {
+            email: credentials.email
+          }
         });
 
-        if (!user || !user.password) return null;
+        if (!user || !user.password) {
+          return null;
+        }
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) return null;
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          return null;
+        }
 
         return {
           id: user.id.toString(),
           email: user.email,
           name: user.name,
+          image: user.image,
         };
-      },
-    }),
+      }
+    })
   ],
-  session: { strategy: "jwt" },
+  session: {
+    strategy: 'jwt'
+  },
   callbacks: {
-    async session({
-      session,
-      token,
-    }: {
-      session: Session;
-      token: JWT;
-    }) {
-      if (token?.sub) session.user.id = token.sub;
-      console.log("Session callback - session:", session);
-        console.log("Session callback - token:", token);
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;
+      }
       return session;
     },
   },
   pages: {
-    signIn: "/login",
-  },
+    signIn: '/login',
+  }
 };
 
-const handler = NextAuth(authOptions);
-
-export default handler;
+// Pages Router requires default export
+export default NextAuth(authOptions);
