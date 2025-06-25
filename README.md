@@ -12,7 +12,7 @@
 ## Introduction
 
 Subscription Manager Version 2 is a **Node.JS** application using the
-**Next.JS** framework and the **SQLite** embedded database to provide
+**Next.JS** framework and the **PostgreSQL** embedded database to provide
 a durable record of subscriptions and their attributes.
 ---
 
