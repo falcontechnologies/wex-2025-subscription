@@ -15,6 +15,8 @@ interface Subscription {
   expiry_date: string;
   payment_period: number;
   payment_amount: number;
+  payment_method?: string;
+  subscription_type?: string;
 }
 
 const Page = () => {
@@ -29,7 +31,9 @@ const Page = () => {
     payment_amount: '',
     payment_period: '',
     start_date: '',
-    expiry_date: ''
+    expiry_date: '',
+    payment_method: '',
+    subscription_type: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -72,7 +76,9 @@ const Page = () => {
           payment_amount: '',
           payment_period: '',
           start_date: '',
-          expiry_date: ''
+          expiry_date: '',
+          payment_method: '',
+          subscription_type: ''
         });
         console.log('Subscription updated successfully');
       } else {
@@ -113,9 +119,10 @@ const Page = () => {
       return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [activeDropdown])
+
   const formatCurrency = (amount: number | string) => {
-  return `$${Number(amount).toFixed(2)}`;
-};
+    return `$${Number(amount).toFixed(2)}`;
+  };
 
   const formatPaymentPeriod = (period: number) => {
     if (period === 1) return 'Monthly';
@@ -130,6 +137,29 @@ const Page = () => {
       month: 'short',
       year: undefined
     });
+  };
+
+  const calculateRenewalDate = (expiryDate: string, paymentPeriod: number) => {
+    const expiry = new Date(expiryDate);
+    const renewal = new Date(expiry);
+    renewal.setMonth(renewal.getMonth() - paymentPeriod);
+    return renewal.toISOString();
+  };
+
+  const getPaymentMethodImage = (paymentMethod: string) => {
+    const method = paymentMethod?.toLowerCase();
+    switch (method) {
+      case 'credit card':
+        return '/creditcard.png'
+      case 'apple pay':
+        return '/applepay.png';
+      case 'paypal':
+        return '/paypal.png';
+      case 'google pay':
+        return '/googlepay.png';
+      default:
+        return '/creditcard.png';
+    }
   };
 
   useEffect(() => {
@@ -184,12 +214,12 @@ const Page = () => {
           </Button>
         </div>
         
-      <div className="space-y-4">
+        <div className="space-y-4">
           {subscriptions.map((subscription: Subscription) => (
             <div key={subscription.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
               <div className="flex items-center justify-between">
-                {/*brand name and photo thing*/}
-                <div className="flex items-center gap-4 flex-1">
+                {/* brand name and photo thing*/}
+                <div className="flex items-center gap-4" style={{ minWidth: '200px' }}>
                   <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                     <span className="text-gray-600 font-medium text-sm">
                       {subscription.name.charAt(0).toUpperCase()}
@@ -200,11 +230,16 @@ const Page = () => {
                     <h3 className="font-medium text-gray-900 text-lg">
                       {subscription.name}
                     </h3>
+                    {subscription.subscription_type && (
+                      <p className="text-sm text-gray-500">
+                        {subscription.subscription_type}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 {/* payment period */}
-                <div className="flex items-center gap-2 px-4">
+                <div className="flex items-center justify-center gap-2" style={{ minWidth: '120px' }}>
                   <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
@@ -214,19 +249,28 @@ const Page = () => {
                 </div>
 
                 {/* date */}
-                <div className="px-4">
+                <div className="text-center" style={{ minWidth: '100px' }}>
                   <span className="text-gray-600">
-                    {formatDate(subscription.expiry_date)}
+                    {formatDate(calculateRenewalDate(subscription.expiry_date, subscription.payment_period))}
                   </span>
                 </div>
 
                 {/* price */}
-                <div className="px-4">
-                  <div className="text-right">
-                    <div className="font-semibold text-gray-900">
-                      {formatCurrency(subscription.payment_amount)}
-                    </div>
+                <div className="text-center" style={{ minWidth: '100px' }}>
+                  <div className="font-semibold text-gray-900">
+                    {formatCurrency(subscription.payment_amount)}
                   </div>
+                </div>
+
+                {/* payment method image */}
+                <div className="flex items-center justify-center" style={{ minWidth: '60px' }}>
+                  {subscription.payment_method && (
+                    <img
+                      src={getPaymentMethodImage(subscription.payment_method)}
+                      alt={subscription.payment_method}
+                      className="w-12 h-12 object-contain"
+                    />
+                  )}
                 </div>
 
                 <div className="relative">
@@ -250,7 +294,9 @@ const Page = () => {
                             payment_amount: String(subscription.payment_amount),
                             payment_period: String(subscription.payment_period),
                             start_date: subscription.start_date || '',
-                            expiry_date: subscription.expiry_date
+                            expiry_date: subscription.expiry_date,
+                            payment_method: subscription.payment_method || '',
+                            subscription_type: subscription.subscription_type || ''
                           });
                           setIsEditModalOpen(true);
                           setActiveDropdown(null);
@@ -319,6 +365,20 @@ const Page = () => {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Subscription Type
+                </label>
+                <input
+                  type="text"
+                  name="subscription_type"
+                  value={formData.subscription_type}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., Software, Entertainment, Professional"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Payment Amount
                 </label>
                 <input
@@ -335,18 +395,35 @@ const Page = () => {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Payment Period
+                  Payment Period (months)
                 </label>
-                <select
+                <input
+                  type="number"
                   name="payment_period"
                   value={formData.payment_period}
                   onChange={handleInputChange}
+                  min="1"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="1 for monthly, 12 for yearly"
                   required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Payment Method
+                </label>
+                <select
+                  name="payment_method"
+                  value={formData.payment_method}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Select period</option>
-                  <option value="1">Monthly</option>
-                  <option value="12">Yearly</option>
+                  <option value="">Select payment method</option>
+                  <option value="Credit Card">Credit Card</option>
+                  <option value="Apple Pay">Apple Pay</option>
+                  <option value="PayPal">PayPal</option>
+                  <option value="Google Pay">Google Pay</option>
                 </select>
               </div>
 
